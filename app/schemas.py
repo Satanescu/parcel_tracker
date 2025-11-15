@@ -13,12 +13,12 @@ class PageParams(BaseModel):
 # Customers
 class CustomerCreate(BaseModel):
     name: str = Field(min_length=1, max_length=80)
-    phone: Optional[str] = Field(default=None, max_length=32)
+    phone: Optional[str] = Field(default=None, max_length=32, pattern=r'^[0-9 +()-]{7,20}$')
 
 
 class CustomerUpdate(BaseModel):
     name: Optional[str] = Field(default=None, min_length=1, max_length=80)
-    phone: Optional[str] = Field(default=None, max_length=32)
+    phone: Optional[str] = Field(default=None, max_length=32,pattern=r'^[0-9 +()-]{7,20}$')
 
 
 class CustomerOut(BaseModel):
@@ -27,7 +27,7 @@ class CustomerOut(BaseModel):
     phone: Optional[str]
     created_at: datetime
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
@@ -56,7 +56,7 @@ class ParcelOut(BaseModel):
     created_at: datetime
     delivered_at: Optional[datetime] = None
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
@@ -76,7 +76,7 @@ class ScanOut(BaseModel):
     ts: datetime
     note: Optional[str]
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 

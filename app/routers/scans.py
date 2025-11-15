@@ -2,10 +2,14 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from app.deps import get_db
 from app.schemas import ScanOut, ScanCreate
 from app.services.parcels import find_parcel_by_code, apply_scan_transition
+from customers import parse_sort,apply_sort
+
+from app.models import Scan
 
 router = APIRouter(prefix="/parcels", tags=["scans"])
 
@@ -43,13 +47,31 @@ def list_scans(
     if not parcel:
         raise HTTPException(404, "parcel not found")
 
-    scans = list(parcel.scans)
-    # sort simple
-    reverse = False
-    if sort.endswith(",desc"):
-        reverse = True
-    scans.sort(key=lambda s: s.ts, reverse=reverse)
+    # scans = list(parcel.scans)
+    # # sort simple
+    # reverse = False
+    # if sort.endswith(",desc"):
+    #     reverse = True
+    # scans.sort(key=lambda s: s.ts, reverse=reverse)
+    #
+    # start = (page - 1) * size
+    # end = start + size
+    # return scans[start:end]
 
-    start = (page - 1) * size
-    end = start + size
-    return scans[start:end]
+    stmt=select(Scan)
+
+    if parcel:
+        stmt=stmt.where(Scan.parcel_id == parcel.id)
+    field, order= parse_sort(
+        sort,
+        {"id","parcel_id","ts","location","type","note"},
+        "ts"
+    )
+    stmt=apply_sort(stmt,Scan,field,order)
+    stmt = stmt.offset((page - 1) * size).limit(size)
+    rows = db.execute(stmt).scalars().all()
+    return rows
+
+
+
+
