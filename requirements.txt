@@ -1,3 +1,4 @@
+pydantic-settings
 fastapi[standard]==0.120.4
 uvicorn==0.38.0
 SQLAlchemy==2.0.44

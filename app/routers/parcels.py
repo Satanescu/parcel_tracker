@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.deps import get_db
 from app.models import Parcel, Customer
-from app.schemas import ParcelOut, ParcelCreate, TimelineOut
+from app.schemas import ParcelOut, ParcelCreate, TimelineOut, ParcelUpdate
 from app.services.parcels import find_parcel_by_code, create_parcel
 from app.routers.customers import parse_sort, apply_sort
 
@@ -86,3 +86,23 @@ def get_timeline(tracking_code: str, db: Session = Depends(get_db)):
         for s in scans
     ]
     return TimelineOut(tracking_code=tracking_code, events=events)
+
+@router.patch("/{tracking_code}", response_model=ParcelOut)
+def update_parcel(tracking_code: str, payload: ParcelUpdate, db: Session = Depends(get_db)):
+    parcel = find_parcel_by_code(db, tracking_code)
+    if not parcel:
+        raise HTTPException(404, "parcel not found")
+
+    if parcel.status == "delivered" or parcel.status == "return":
+        raise HTTPException(409, "Conflict")
+
+    updated_data= payload.model_dump(exclude_unset=True)
+
+    for field, value in updated_data.items():
+        setattr(parcel, field, value)
+
+    db.commit()
+    db.refresh(parcel)
+
+    return parcel
+

@@ -7,7 +7,7 @@ from sqlalchemy import select
 from app.deps import get_db
 from app.schemas import ScanOut, ScanCreate
 from app.services.parcels import find_parcel_by_code, apply_scan_transition
-from customers import parse_sort,apply_sort
+from app.routers.customers import parse_sort,apply_sort
 
 from app.models import Scan
 
