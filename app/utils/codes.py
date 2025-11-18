@@ -1,5 +1,5 @@
 from datetime import datetime
-from app.utils.config import settings
+from app.config import settings
 
 
 def build_tracking_code(year: int, seq: int) -> str:

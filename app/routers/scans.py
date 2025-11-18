@@ -64,7 +64,7 @@ def list_scans(
         stmt=stmt.where(Scan.parcel_id == parcel.id)
     field, order= parse_sort(
         sort,
-        {"id","parcel_id","ts","location","type","note"},
+        {"ts","location","type"},
         "ts"
     )
     stmt=apply_sort(stmt,Scan,field,order)
