@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     TRACKING_CODE_PREFIX: str = "PACKAGE"
-    TRACKING_CODE_PADDING: int = 5
+    TRACKING_CODE_PADDING: int = 6
 
 
     # model_config = SettingsConfigDict(
